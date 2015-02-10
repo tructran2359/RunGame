@@ -8,28 +8,36 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.tructran2359.app.R;
+import com.tructran2359.app.helper.LogHelper;
 import com.tructran2359.app.helper.MyHelper;
 
 public class MainActivity extends ActionBarActivity {
 
 
-    private ImageView mIVContent;
+    private ImageView mIVContent, mIVRequiredArea;
+    private TextView mTVScore;
     private Button mBtnStart;
-    private RelativeLayout mRLSurface;
+    private FrameLayout mFLSurface;
     private boolean mIsRunning = false;
     private float mAngle = 0;
-    private float mAngleIncreasement = DEFAULT_ANGLE_INCREASEMENT;
+    private float mAngleIncrement = DEFAULT_ANGLE_INCREMENT;
+    private int mScoreIncrement = DEFAULT_SCORE_INCREMENT;
     private MyHandler mHandler;
+    private int mTotalScore = 0;
+
+    private static final int REQUIRED_AREA_MIN = 270;
+    private static final int REQUIRED_AREA_MAX = 359;
 
     private static final float FRAME_TIME = (float) 1000 / 100;
-    private static final float DEFAULT_ANGLE_INCREASEMENT = 1;
+    private static final float DEFAULT_ANGLE_INCREMENT = 3;
+    private static final int DEFAULT_SCORE_INCREMENT = 100;
 
-    public static final int HANDLER_START = 1;
-    public static final int HANDLER_MOVE = 2;
+    public static final int HANDLER_START = 2;
     public static final int HANDLER_STOP = 3;
 
     @Override
@@ -66,37 +74,54 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //================== my methods ================================
+    
+    private int mCount = 0;
 
     public void initWidgets() {
+        mTVScore = (TextView) findViewById(R.id.act_main_tv_score);
         mIVContent = (ImageView) findViewById(R.id.act_main_iv_content);
+        mIVRequiredArea = (ImageView) findViewById(R.id.act_main_iv_required_area);
+
         MyHelper.ScreenSize screenSize = MyHelper.getScreenSize(this);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mIVContent.getLayoutParams();
-        params.width = screenSize.width * 2 / 3;
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mIVContent.getLayoutParams();
+        params.width = screenSize.width - 100;
         params.height = params.width;
+
         mIVContent.setLayoutParams(params);
         mIVContent.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        mIVRequiredArea.setLayoutParams(params);
+        mIVRequiredArea.setScaleType(ImageView.ScaleType.FIT_XY);
 
         mBtnStart = (Button) findViewById(R.id.act_main_btn_start_stop);
         mBtnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mIsRunning) {
-                    mIsRunning = false;
-                    mBtnStart.setText("Start");
-                    mHandler.sendEmptyMessageDelayed(HANDLER_STOP, (long) FRAME_TIME);
-                } else {
-                    mIsRunning = true;
-                    mBtnStart.setText("Stop");
-                    mHandler.sendEmptyMessageDelayed(HANDLER_MOVE, (long) FRAME_TIME);
-                }
+                mIVContent.setRotation(0);
+                mAngleIncrement = DEFAULT_ANGLE_INCREMENT;
+                mHandler.sendEmptyMessage(HANDLER_START);
             }
         });
 
-        mRLSurface = (RelativeLayout) findViewById(R.id.act_main_rl_surface_view);
-        mRLSurface.setOnClickListener(new View.OnClickListener() {
+        mFLSurface = (FrameLayout) findViewById(R.id.act_main_fl_surface_view);
+        mFLSurface.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAngleIncreasement += 1;
+                int angle = (int) mAngle % 360;
+                if (angle >= REQUIRED_AREA_MIN && angle <= REQUIRED_AREA_MAX) {
+                    if (mCount >= 4) {
+                        mAngleIncrement += 1;
+                        mScoreIncrement += 100;
+                        mCount = 0;
+                    } else {
+                        mCount ++;
+                    }
+                    mTotalScore += mScoreIncrement;
+                    mTVScore.setText("Total score: " + mTotalScore);
+                } else {
+                    LogHelper.i("StopGame", "angle: " + angle);
+                    mHandler.sendEmptyMessage(HANDLER_STOP);
+                }
             }
         });
 
@@ -107,7 +132,7 @@ public class MainActivity extends ActionBarActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case HANDLER_MOVE:
+                case HANDLER_START:
                     startAnimation();
                     break;
 
@@ -121,12 +146,13 @@ public class MainActivity extends ActionBarActivity {
 
     public void startAnimation() {
         mIVContent.setRotation(mAngle);
-        mAngle += mAngleIncreasement;
-        mHandler.sendEmptyMessageDelayed(HANDLER_MOVE, (long) FRAME_TIME);
+        mAngle += mAngleIncrement;
+        mHandler.sendEmptyMessageDelayed(HANDLER_START, (long) FRAME_TIME);
     }
 
     public void stopAnimation() {
-        mHandler.removeMessages(HANDLER_MOVE);
-        mAngleIncreasement = DEFAULT_ANGLE_INCREASEMENT;
+        mHandler.removeMessages(HANDLER_START);
+        mAngleIncrement = DEFAULT_ANGLE_INCREMENT;
+        mScoreIncrement = DEFAULT_SCORE_INCREMENT;
     }
 }

@@ -15,19 +15,35 @@
         android:text="Start" />
 
 
-    <RelativeLayout
-        android:id="@+id/act_main_rl_surface_view"
+    <FrameLayout
+        android:id="@+id/act_main_fl_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/act_main_btn_start_stop">
 
         <ImageView
+            android:id="@+id/act_main_iv_required_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/img_required_area"
+            android:layout_gravity="center" />
+
+        <ImageView
             android:id="@+id/act_main_iv_content"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:src="@drawable/img_test"
-            android:layout_centerInParent="true" />
+            android:src="@drawable/img_run_circle"
+            android:layout_gravity="center" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/act_main_tv_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+
 
 </RelativeLayout>
