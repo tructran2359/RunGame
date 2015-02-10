@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/act_main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.tructran2359.app.activity.MainActivity"
+    android:background="@color/purple">
+
+    <Button
+        android:id="@+id/act_test_btn_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <View
+        android:id="@+id/act_test_v_center"
+        android:layout_width="@dimen/act_main_view_center_size"
+        android:layout_height="@dimen/act_main_view_center_size"
+        android:background="@drawable/ic_refresh"/>
+
+    <View
+        android:id="@+id/act_test_v_circle"
+        android:layout_width="@dimen/act_main_view_center_size"
+        android:layout_height="@dimen/act_main_view_center_size"
+        android:background="@drawable/ic_island"/>
+
+
+</RelativeLayout>
