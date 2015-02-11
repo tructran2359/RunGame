@@ -9,5 +9,10 @@
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_splash_screen">50sp</dimen>
 
+    <dimen name="common_space">5dp</dimen>
+    <dimen name="common_space_a_half">2.5dp</dimen>
+    <dimen name="common_space_double">10dp</dimen>
+    <dimen name="common_space_triple">15dp</dimen>
+
     <dimen name="act_main_view_center_size">50dp</dimen>
 </resources>

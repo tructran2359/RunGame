@@ -6,5 +6,11 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_test">TestActivity</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="total_score">Total score</string>
+    <string name="game_over">Game Over</string>
+    <string name="your_score">Your score</string>
+    <string name="new_record">New record</string>
+    <string name="highest_score">Highest score</string>
+    <string name="share_on_facebook">Share on Facebook</string>
+    <string name="facebook_message">Can you get higher score??? I am sure that you can not LoL</string>
 </resources>

@@ -64,7 +64,7 @@ public class TestActivity extends ActionBarActivity {
     public void initWidgets() {
         mVCenter = findViewById(R.id.act_test_v_center);
         mVCircle = findViewById(R.id.act_test_v_circle);
-        mVRoot = findViewById(R.id.act_main_root);
+        mVRoot = findViewById(R.id.act_test_root);
         mBtnStart = (Button) findViewById(R.id.act_test_btn_start);
         mWorker = new Worker();
         mBtnStart.setOnClickListener(new View.OnClickListener() {

@@ -5,4 +5,10 @@
     <color name="orange">#E65100</color>
 
     <color name="purple">#9C27B0</color>
+
+    <color name="dimmed_background">#44000000</color>
+
+    <color name="result_background">#1565C0</color>
+
+    <color name="act_main_bg">#BBDEFB</color>
 </resources>

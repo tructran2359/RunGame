@@ -1,9 +1,11 @@
 package com.tructran2359.app.helper;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 /**
  * Created by tructran on 2/9/15.
@@ -26,6 +28,10 @@ public class MyHelper {
             mScreenSize.height = dm.heightPixels;
         }
         return mScreenSize;
+    }
+
+    public static void showToast(Context ctx, String msg) {
+        Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
     }
 
 }
