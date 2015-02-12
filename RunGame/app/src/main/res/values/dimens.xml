@@ -15,4 +15,5 @@
     <dimen name="common_space_triple">15dp</dimen>
 
     <dimen name="act_main_view_center_size">50dp</dimen>
+    <dimen name="act_main_view_level_count_height">10dp</dimen>
 </resources>

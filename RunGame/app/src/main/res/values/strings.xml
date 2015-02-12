@@ -15,4 +15,5 @@
     <string name="facebook_message">Can you get higher score??? I am sure that you can not LoL</string>
     <string name="done">DONE</string>
     <string name="error">Somethings went wrong</string>
+    <string name="press_to_start_msg">Press button below\nto start</string>
 </resources>

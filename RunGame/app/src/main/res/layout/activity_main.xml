@@ -6,6 +6,44 @@
     tools:context="com.tructran2359.app.activity.TestActivity"
     android:background="@color/act_main_bg">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <View
+                android:id="@+id/act_main_v_level_count_1"
+                style="@style/act_main_v_level_count_style" />
+
+            <View
+                android:id="@+id/act_main_v_level_count_2"
+                style="@style/act_main_v_level_count_style" />
+
+            <View
+                android:id="@+id/act_main_v_level_count_3"
+                style="@style/act_main_v_level_count_style" />
+
+            <View
+                android:id="@+id/act_main_v_level_count_4"
+                style="@style/act_main_v_level_count_style"
+                android:layout_marginRight="0dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/act_main_tv_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_large"/>
+    </LinearLayout>
+
 
     <FrameLayout
         android:id="@+id/act_main_fl_surface_view"
@@ -26,12 +64,22 @@
             android:src="@drawable/img_run_circle"
             android:layout_gravity="center" />
 
-        <TextView
-            android:id="@+id/act_main_tv_score"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center" />
+            android:orientation="vertical"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/act_main_tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/act_main_tv_score_increment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
     </FrameLayout>
 
@@ -50,29 +98,29 @@
 
             <TextView
                 android:id="@+id/act_main_tv_title"
-                style="@style/act_main_tv_result_style"/>
+                style="@style/act_main_tv_result_style" />
 
             <TextView
                 android:id="@+id/act_main_tv_final_score"
-                style="@style/act_main_tv_result_style"/>
+                style="@style/act_main_tv_result_style" />
 
             <TextView
                 android:id="@+id/act_main_tv_highest_score"
-                style="@style/act_main_tv_result_style"/>
+                style="@style/act_main_tv_result_style" />
 
             <Button
                 android:id="@+id/act_main_btn_start_stop"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@drawable/ic_refresh"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal" />
 
             <Button
                 android:id="@+id/act_main_btn_share_on_facebook"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/share_on_facebook"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
 
@@ -82,6 +130,6 @@
         android:id="@+id/act_main_btn_fb_login"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </RelativeLayout>

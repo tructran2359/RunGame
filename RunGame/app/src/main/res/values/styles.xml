@@ -16,4 +16,12 @@
         <item name="android:layout_marginBottom">@dimen/common_space</item>
     </style>
 
+    <style name="act_main_v_level_count_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/act_main_view_level_count_height</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:background">@color/orange</item>
+    </style>
+
 </resources>
