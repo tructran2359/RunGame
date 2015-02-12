@@ -13,4 +13,6 @@
     <string name="highest_score">Highest score</string>
     <string name="share_on_facebook">Share on Facebook</string>
     <string name="facebook_message">Can you get higher score??? I am sure that you can not LoL</string>
+    <string name="done">DONE</string>
+    <string name="error">Somethings went wrong</string>
 </resources>

@@ -2,7 +2,6 @@ package com.tructran2359.app.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,13 +49,41 @@ public class MainActivity extends ActionBarActivity {
     private int mAreaMin, mAreaMax;
     private Random mRandom = new Random();
 
+
     //game constants
     private static final float DEFAULT_ANGLE_INCREMENT = 3;
     private static final int DEFAULT_SCORE_INCREMENT = 100;
     private static final int REQUIRED_AREA_MIN = 270;
     private static final int REQUIRED_AREA_MAX = 359;
     private static final float FRAME_TIME = (float) 1000 / 60;
+    private static final int CIRCLE_DEGREE = 360;
+    private static final int NUMBER_OF_ACCEPTED_AREA = 7;
 
+    private static final int ACCEPTED_AREA_30 = 0;
+    private static final int ACCEPTED_AREA_45 = 1;
+    private static final int ACCEPTED_AREA_60 = 2;
+    private static final int ACCEPTED_AREA_90 = 3;
+    private static final int ACCEPTED_AREA_120 = 4;
+    private static final int ACCEPTED_AREA_150 = 5;
+    private static final int ACCEPTED_AREA_180 = 6;
+
+    private static final List<Integer> LIST_ACCEPTED_AREA_DRAWABLE_ID = Arrays.asList(
+            R.drawable.accept_30,
+            R.drawable.accept_45,
+            R.drawable.accept_60,
+            R.drawable.accept_90,
+            R.drawable.accept_120,
+            R.drawable.accept_150,
+            R.drawable.accept_180);
+
+    private static final List<Integer> LIST_ACCEPTED_AREA_DEGREE = Arrays.asList(
+            30,
+            45,
+            60,
+            90,
+            120,
+            150,
+            180);
     private MyHandler mHandler;
     public static final int HANDLER_START = 2;
     public static final int HANDLER_STOP = 3;
@@ -99,12 +126,12 @@ public class MainActivity extends ActionBarActivity {
         mUIHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
             @Override
             public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle bundle) {
-                MyHelper.showToast(MainActivity.this, "DONE");
+                MyHelper.showToast(MainActivity.this, getString(R.string.done));
             }
 
             @Override
             public void onError(FacebookDialog.PendingCall pendingCall, Exception e, Bundle bundle) {
-                MyHelper.showToast(MainActivity.this, "ERROR");
+                MyHelper.showToast(MainActivity.this, getString(R.string.error));
                 LogHelper.i("facebook", "onActivityResult " + e.toString());
             }
         });
@@ -222,7 +249,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void startGame() {
         resetData();
-        randomAngle();
+        randomAcceptedArea();
         mRLGroupControl.setVisibility(View.GONE);
         mFLSurface.setVisibility(View.VISIBLE);
         mFLSurface.setEnabled(true);
@@ -260,6 +287,9 @@ public class MainActivity extends ActionBarActivity {
         mTVHighestScore.setVisibility(View.VISIBLE);
         mTVFinalScore.setVisibility(View.VISIBLE);
 
+        mIVRequiredArea.setRotation(mAreaMin);
+        mIVContent.setRotation(mAngle);
+
         if (mTotalScore >= mHighestScore) {
             mHighestScore = mTotalScore;
             mTVTitle.setText(getString(R.string.new_record));
@@ -285,17 +315,23 @@ public class MainActivity extends ActionBarActivity {
             }
             mTotalScore += mScoreIncrement;
             mTVScore.setText(getString(R.string.total_score) + ": " + mTotalScore);
-            randomAngle();
+            randomAcceptedArea();
         } else {
             LogHelper.i("StopGame", "angle: " + angle + " min: " + mAreaMin + " max: " + mAreaMax);
             mHandler.sendEmptyMessage(HANDLER_STOP);
         }
     }
 
-    public void randomAngle() {
-        int randomAngle = mRandom.nextInt(360);
-        mAreaMin = (REQUIRED_AREA_MIN + randomAngle) % 360;
-        mAreaMax = (REQUIRED_AREA_MAX + randomAngle) % 360;
+    public void randomAcceptedArea() {
+        int randomAngle = mRandom.nextInt(CIRCLE_DEGREE);
+        int randomAcceptedArea = mRandom.nextInt(NUMBER_OF_ACCEPTED_AREA);
+
+        mIVRequiredArea.setImageResource(LIST_ACCEPTED_AREA_DRAWABLE_ID.get(randomAcceptedArea));
+        int acceptedAreaDegree = LIST_ACCEPTED_AREA_DEGREE.get(randomAcceptedArea);
+
+
+        mAreaMin = (randomAngle + 0) % 360;
+        mAreaMax = (randomAngle + acceptedAreaDegree) % 360;
         mIVRequiredArea.setRotation((float) randomAngle);
     }
 
@@ -309,7 +345,6 @@ public class MainActivity extends ActionBarActivity {
                     new Session.OpenRequest(this)
                             .setCallback(mStatusCallback)
                             .setPermissions(Arrays.asList("email", "publish_actions", "publish_stream")));
-//            mLoginButton.performClick();
         }
     }
 
