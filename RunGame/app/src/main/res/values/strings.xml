@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">RunGame</string>
-    <string name="title_activity_splash">SplashActivity</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
@@ -12,8 +11,22 @@
     <string name="new_record">New record</string>
     <string name="highest_score">Highest score</string>
     <string name="share_on_facebook">Share on Facebook</string>
-    <string name="facebook_message">Can you get higher score??? I am sure that you can not LoL</string>
+    <string name="facebook_message">Can you get higher score??? I\'m sure that you can\'t LoL</string>
     <string name="done">DONE</string>
     <string name="error">Somethings went wrong</string>
     <string name="press_to_start_msg">Press button below\nto start</string>
+    
+    <string name="dialog_ask_to_log_in_fb_title">Log in Facebook</string>
+    <string name="dialog_ask_to_log_in_fb_message">It seems like you haven\'t logged in Facebook yet.\nPlease log in first to share your score!</string>
+    <string name="dialog_ask_to_log_in_fb_ok">OK</string>
+    <string name="dialog_ask_to_log_in_fb_cancel">Cancel</string>
+
+    <string name="link_download">Link download: [coming soon]</string>
+    <string name="share_score_hint">Say something about this photo...</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_share_score">ShareScoreActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

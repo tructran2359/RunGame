@@ -1,14 +1,19 @@
 package com.tructran2359.app.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -25,8 +30,13 @@ import com.tructran2359.app.helper.LogHelper;
 import com.tructran2359.app.helper.MyHelper;
 import com.tructran2359.app.helper.PreferencesHelper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -100,6 +110,8 @@ public class MainActivity extends ActionBarActivity {
     private PreferencesHelper mPref;
     public static final int HANDLER_START = 2;
     public static final int HANDLER_STOP = 3;
+    public static final String KEY_BITMAP = "MainActivity.KEY_BITMAP";
+    public static final int REQUEST_SHARE_SCORE = 123;
 
     //facebook
     private UiLifecycleHelper mUIHelper;
@@ -133,6 +145,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         LogHelper.i("actResult", "requestCode: " + requestCode + " resultCode: " + resultCode);
+
+        if (requestCode == REQUEST_SHARE_SCORE) {
+            if (resultCode == RESULT_OK) {
+                MyHelper.showToast(this, getString(R.string.done));
+            } else if (resultCode == RESULT_CANCELED) {
+                MyHelper.showToast(this, getString(R.string.error));
+            }
+        }
+
         Session session = Session.getActiveSession();
         if (session != null) {
             session.onActivityResult(this, requestCode, resultCode, data);
@@ -382,7 +403,7 @@ public class MainActivity extends ActionBarActivity {
 
             mTotalScore += mScoreIncrement + mScoreContinuousBonus;
             mTVScore.setText(getString(R.string.total_score) + ": " + mTotalScore);
-            mTvScoreIncrement.setText("+" + mScoreIncrement + " +" + mScoreContinuousBonus);
+            mTvScoreIncrement.setText("+" + mScoreIncrement + (mScoreContinuousBonus != 0 ? " +" + mScoreContinuousBonus : ""));
             mAnglePrevious = mAngle;
             randomAcceptedArea();
         } else {
@@ -428,39 +449,86 @@ public class MainActivity extends ActionBarActivity {
     public void doShareFacebook() {
         Session session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-            shareScreenShot();
+            requestShareScreenShot();
         } else {
-            LogHelper.i("facebook", "login");
-            session.openForPublish(
-                    new Session.OpenRequest(this)
-                            .setCallback(mStatusCallback)
-                            .setPermissions(Arrays.asList("email", "publish_actions", "publish_stream")));
+            requestLogInFacebook();
         }
     }
 
-    public void shareScreenShot() {
+    public void requestShareScreenShot() {
         LogHelper.i("facebook", "share");
         mRLRoot.setDrawingCacheEnabled(true);
         Bitmap bmp = Bitmap.createBitmap(mRLRoot.getDrawingCache());
         mRLRoot.setDrawingCacheEnabled(false);
-        ArrayList<Bitmap> listBmp = new ArrayList<>();
-        listBmp.add(bmp);
+        //TODO
 
-        if (FacebookDialog.canPresentShareDialog(this, FacebookDialog.ShareDialogFeature.PHOTOS)) {
-            FacebookDialog fbDialog = new FacebookDialog.PhotoShareDialogBuilder(this).addPhotos(listBmp).build();
-            mUIHelper.trackPendingDialogCall(fbDialog.present());
-        } else {
-            Request request = Request.newUploadPhotoRequest(Session.getActiveSession(), bmp, new Request.Callback() {
-                @Override
-                public void onCompleted(Response response) {
-                    MyHelper.showToast(MainActivity.this, response.getError() == null ? "no error" : response.getError().toString());
-                    LogHelper.i("facebook", response.getError() == null ? "no error" : response.getError().toString());
-                }
-            });
-            Bundle bundle = request.getParameters();
-            bundle.putString("message", getString(R.string.facebook_message));
-            request.setParameters(bundle);
-            request.executeAsync();
+        String savedBmpFilePath = saveBitmap(bmp);
+        if (savedBmpFilePath == null) {
+            MyHelper.showToast(this, getString(R.string.error));
+            return;
+        }
+
+        Intent intent = new Intent(this, ShareScoreActivity.class);
+        intent.putExtra(KEY_BITMAP, savedBmpFilePath);
+        startActivityForResult(intent, REQUEST_SHARE_SCORE);
+
+//        showShareDialog(bmp);
+    }
+
+
+    public void requestLogInFacebook() {
+        LogHelper.i("facebook", "login");
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(getString(R.string.dialog_ask_to_log_in_fb_title));
+        alertDialogBuilder.setMessage(getString(R.string.dialog_ask_to_log_in_fb_message));
+        alertDialogBuilder.setNegativeButton(getString(R.string.dialog_ask_to_log_in_fb_cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialogBuilder.setPositiveButton(getString(R.string.dialog_ask_to_log_in_fb_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                doLogInFaceBook();
+                dialog.dismiss();
+            }
+        });
+        alertDialogBuilder.show();
+    }
+
+    public void doLogInFaceBook() {
+        LogHelper.i("facebook", "do login");
+        Session.getActiveSession().openForPublish(
+                new Session.OpenRequest(this)
+                        .setCallback(mStatusCallback)
+                        .setPermissions(Arrays.asList("email", "publish_actions", "publish_stream")));
+    }
+
+    public String saveBitmap(Bitmap bmp) {
+        String rootPath = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(rootPath + "/RunGameScreenShots");
+        myDir.mkdirs();
+        long timestamp = System.currentTimeMillis();
+        String fileName = "RunGame_" + timestamp + ".png";
+        File file = new File(myDir, fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            fos.flush();
+            fos.close();
+            return file.getAbsolutePath();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            LogHelper.i("savefile", e.toString());
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            LogHelper.i("savefile", e.toString());
+            return null;
         }
     }
 }

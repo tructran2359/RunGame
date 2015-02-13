@@ -16,4 +16,7 @@
 
     <dimen name="act_main_view_center_size">50dp</dimen>
     <dimen name="act_main_view_level_count_height">10dp</dimen>
+
+    <dimen name="dialog_share_score_iv_size">150dp</dimen>
+    <dimen name="dialog_share_score_width">450dp</dimen>
 </resources>
