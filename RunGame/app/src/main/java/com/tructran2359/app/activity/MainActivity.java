@@ -71,10 +71,13 @@ public class MainActivity extends ActionBarActivity {
     private float mAngle = 0;
     private float mAnglePrevious = 0;
     private float mAngleIncrement = DEFAULT_ANGLE_INCREMENT;
+
     private int mTotalScore = 0;
     private int mScoreIncrement = DEFAULT_SCORE_INCREMENT;
     private int mScoreContinuousBonus = 0;
+    private int mScoreFault = 0;
     private int mHighestScore = 0;
+
     private int mAreaMin, mAreaMax;
     private Random mRandom = new Random();
     private int mLevel = 1;
@@ -86,6 +89,7 @@ public class MainActivity extends ActionBarActivity {
     private static final float DEFAULT_ANGLE_INCREMENT = 3;
     private static final int DEFAULT_SCORE_INCREMENT = 100;
     private static final int DEFAULT_CONTINUOUS_BONUS = 100;
+    private static final int DEFAULT_FAULT_SCORE = 20;
     private static final float FRAME_TIME = (float) 1000 / 60;
     private static final int CIRCLE_DEGREE = 360;
     private static final int NUMBER_OF_ACCEPTED_AREA = 6;
@@ -326,6 +330,7 @@ public class MainActivity extends ActionBarActivity {
         mAnglePrevious = 0;
         mAngleIncrement = DEFAULT_ANGLE_INCREMENT;
         mScoreIncrement = DEFAULT_SCORE_INCREMENT;
+        mScoreFault = 0;
         mLevel = 1;
         mTVLevel.setText("Level " + 1);
         resetCountView();
@@ -358,7 +363,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void checkEvent() {
-        int angle = (int) mAngle % 360;
+        int angle = (int) (mAngle % 360);
         if ((mAreaMin < mAreaMax && (angle >= mAreaMin && angle <= mAreaMax))
                 || ((mAreaMin > mAreaMax)) && (angle >= mAreaMin || angle <= mAreaMax)) {
             if (mCount >= 4) {
@@ -389,21 +394,44 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
 
-            LogHelper.i("angle", "prev " + mAnglePrevious + " curr " + mAngle);
+            float distance = mAngle - mAnglePrevious;
+            LogHelper.i("angle", "prev " + mAnglePrevious + " curr " + mAngle + " distance " + distance);
 
-            if (mAnglePrevious != 0 && (mAngle - mAnglePrevious) < CIRCLE_DEGREE) {
+            if (mAnglePrevious != 0 && distance <= CIRCLE_DEGREE) {
                 if (mScoreContinuousBonus == 0) {
                     mScoreContinuousBonus = DEFAULT_CONTINUOUS_BONUS;
                 } else {
                     mScoreContinuousBonus += 50;
                 }
+                mScoreFault = 0;
+            } else if (mAnglePrevious != 0 && distance > CIRCLE_DEGREE){
+                mScoreContinuousBonus = 0;
+                if (distance > (2*CIRCLE_DEGREE)){
+                    mScoreFault = DEFAULT_FAULT_SCORE * ((int)distance / CIRCLE_DEGREE);
+                } else {
+                    mScoreFault = 0;
+                }
             } else {
                 mScoreContinuousBonus = 0;
+                mScoreFault = 0;
             }
 
-            mTotalScore += mScoreIncrement + mScoreContinuousBonus;
-            mTVScore.setText(getString(R.string.total_score) + ": " + mTotalScore);
-            mTvScoreIncrement.setText("+" + mScoreIncrement + (mScoreContinuousBonus != 0 ? " +" + mScoreContinuousBonus : ""));
+            int increasedScore = mScoreIncrement + mScoreContinuousBonus - mScoreFault;
+            if (increasedScore < 0) {
+                mTotalScore += 0;
+                mTVScore.setText(getString(R.string.total_score) + ": " + mTotalScore);
+//                mTvScoreIncrement.setText("+0");
+                mTvScoreIncrement.setText("+" + mScoreIncrement + " +" + mScoreContinuousBonus + " -" + mScoreFault);
+            } else {
+                mTotalScore += increasedScore;
+                mTVScore.setText(getString(R.string.total_score) + ": " + mTotalScore);
+//                mTvScoreIncrement.setText( "+"
+//                                + mScoreIncrement
+//                                + (mScoreContinuousBonus != 0 ? " +" + mScoreContinuousBonus : "")
+//                                + (mScoreFault != 0 ? " -" + mScoreFault : ""));
+                mTvScoreIncrement.setText("+" + mScoreIncrement + " +" + mScoreContinuousBonus + " -" + mScoreFault);
+            }
+
             mAnglePrevious = mAngle;
             randomAcceptedArea();
         } else {
